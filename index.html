@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>打氣小幫手</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- 手寫字體 -->
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Caveat:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow-x: hidden;
+      font-family: 'Poppins', 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #3f3743;
+      background: linear-gradient(145deg, #fdebf2, #e8f0ff);
+    }
+
+    body {
+      position: relative;
+      font-size: 16px;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.6) 0, transparent 55%),
+        radial-gradient(circle at 100% 0, rgba(255, 255, 255, 0.45) 0, transparent 55%),
+        radial-gradient(circle at 0 100%, rgba(255, 220, 245, 0.35) 0, transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(210, 220, 255, 0.35) 0, transparent 55%);
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      z-index: 0;
+    }
+
+    .petal {
+      position: fixed;
+      top: -40px;
+      width: 14px;
+      height: 14px;
+      background: radial-gradient(circle at 30% 30%, #fff 0, #ffd5e8 40%, #f6a9c7 70%, transparent 80%);
+      border-radius: 50% 70% 50% 70%;
+      opacity: 0.7;
+      pointer-events: none;
+      animation-name: fall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      z-index: 1;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translate3d(20px, 110vh, 0) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .scene {
+      position: fixed;
+      left: 50%;
+      bottom: -30px;
+      transform: translateX(-50%);
+      width: 1200px;
+      max-width: 100%;
+      height: 230px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .scene-ground {
+      position: absolute;
+      left: 50%;
+      bottom: -120px;
+      transform: translateX(-50%);
+      width: 130%;
+      height: 280px;
+      background: radial-gradient(ellipse at top, #f7f2ff 0, #e6f4ff 40%, #d3e5ff 70%, #bfd7f9 100%);
+      border-radius: 60% 60% 0 0;
+      opacity: 0.9;
+    }
+
+    .scene-bear {
+      position: absolute;
+      right: 18%;
+      bottom: 55px;
+      width: 80px;
+      height: 90px;
+      animation: floatBear 4s ease-in-out infinite;
+    }
+
+    .scene-dog {
+      position: absolute;
+      right: 8%;
+      bottom: 50px;
+      width: 60px;
+      height: 70px;
+      animation: floatDog 3.6s ease-in-out infinite;
+    }
+
+    @keyframes floatBear {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    @keyframes floatDog {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    .bear-head {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 58px;
+      height: 52px;
+      background: #f2d8c6;
+      border-radius: 50px;
+      box-shadow: 0 4px 10px rgba(172, 132, 102, 0.35);
+    }
+
+    .bear-ear {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: #f2d8c6;
+      border-radius: 50%;
+      top: -6px;
+      box-shadow: 0 2px 4px rgba(172, 132, 102, 0.35);
+    }
+    .bear-ear.left { left: 4px; }
+    .bear-ear.right { right: 4px; }
+
+    .bear-face-inner {
+      position: absolute;
+      width: 36px;
+      height: 24px;
+      background: #fdf2e7;
+      border-radius: 50px;
+      left: 50%;
+      top: 16px;
+      transform: translateX(-50%);
+    }
+
+    .bear-eye {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: #5d4331;
+      border-radius: 50%;
+      top: 16px;
+    }
+    .bear-eye.left { left: 16px; }
+    .bear-eye.right { right: 16px; }
+
+    .bear-nose {
+      position: absolute;
+      width: 8px;
+      height: 6px;
+      background: #5d4331;
+      border-radius: 6px 6px 8px 8px;
+      left: 50%;
+      top: 24px;
+      transform: translateX(-50%);
+    }
+
+    .bear-body {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 42px;
+      background: #f2d8c6;
+      border-radius: 30px 30px 24px 24px;
+      box-shadow: 0 6px 14px rgba(172, 132, 102, 0.45);
+    }
+
+    .bear-heart {
+      position: absolute;
+      width: 18px;
+      height: 16px;
+      left: 50%;
+      top: 12px;
+      transform: translateX(-50%) rotate(-8deg);
+      background:
+        radial-gradient(circle at 30% 30%, #fffdfd 0, #ffd7ea 45%, #f29ec7 80%);
+      clip-path: path("M9 16 C-2 6 3 -2 9 3 C15 -2 20 6 9 16 Z");
+      box-shadow: 0 2px 5px rgba(200, 90, 130, 0.5);
+    }
+
+    .dog-head {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 44px;
+      height: 40px;
+      background: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(180, 180, 190, 0.5);
+    }
+
+    .dog-ear {
+      position: absolute;
+      width: 16px;
+      height: 18px;
+      background: #ffffff;
+      border-radius: 50%;
+      top: -4px;
+      box-shadow: 0 2px 4px rgba(180, 180, 190, 0.5);
+    }
+    .dog-ear.left { left: -2px; }
+    .dog-ear.right { right: -2px; }
+
+    .dog-face-inner {
+      position: absolute;
+      width: 26px;
+      height: 18px;
+      background: #f8f5ff;
+      border-radius: 50px;
+      left: 50%;
+      top: 14px;
+      transform: translateX(-50%);
+    }
+
+    .dog-eye {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #444;
+      border-radius: 50%;
+      top: 14px;
+    }
+    .dog-eye.left { left: 12px; }
+    .dog-eye.right { right: 12px; }
+
+    .dog-nose {
+      position: absolute;
+      width: 6px;
+      height: 5px;
+      background: #444;
+      border-radius: 50%;
+      left: 50%;
+      top: 22px;
+      transform: translateX(-50%);
+    }
+
+    .dog-body {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 42px;
+      height: 30px;
+      background: #ffffff;
+      border-radius: 20px 20px 18px 18px;
+      box-shadow: 0 5px 12px rgba(180, 180, 190, 0.6);
+    }
+
+    .wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 56px;
+      position: relative;
+      z-index: 2;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      color: #90C3DF;
+      letter-spacing: 0.05em;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Poppins', 'Poppins';
+      font-weight: 700;
+    }
+
+    header h1 .icon {
+      font-size: 2rem;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      color: #6b769c;
+      line-height: 5;
+      font-family: 'Poppins', 'Poppins';
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .history-button {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      transition: transform 0.1s, opacity 0.15s;
+    }
+
+    .history-button:hover {
+      transform: translateY(-1px);
+      opacity: 0.8;
+    }
+
+    .sections {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .card {
+      background: linear-gradient(135deg, rgba(255, 235, 250, 0.95), rgba(255, 240, 245, 0.95));
+      border-radius: 32px;
+      padding: 18px 18px 20px;
+      box-shadow: 0 18px 40px rgba(197, 177, 206, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+    }
+
+    .card-plain {
+      background: none;
+      box-shadow: none;
+      border: none;
+      padding: 0 0 10px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      justify-content: space-between;
+    }
+
+    .card-header h2 {
+      font-size: 1.3rem;
+      color: #D4A6F1;
+      font-family: 'Poppins', 'Poppins';
+      font-weight: 700;
+    }
+
+    /* 小顆藍色按鈕：字寬 + 不固定全寬 */
+    .btn-blue {
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #98C4F4, #B0D6FF);
+      color: #ffffff;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      gap: 5px;
+      box-shadow: 0 6px 14px rgba(150, 185, 220, 0.6);
+      white-space: nowrap;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      font-family: 'Caveat', 'Noto Sans TC';
+      font-weight: 600;
+      width: auto;
+      min-width: 0;
+    }
+
+    .btn-blue:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(140, 175, 215, 0.85);
+    }
+
+    .btn-pink {
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #ffb7cf, #f59ac1);
+      color: #fff;
+      padding: 9px 18px;
+      font-size: 0.95rem;
+      gap: 7px;
+      box-shadow: 0 8px 18px rgba(229, 155, 192, 0.7);
+      white-space: nowrap;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      font-family: 'Poppins', 'Poppins';
+      font-weight: 600;
+    }
+
+    .btn-pink:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(222, 145, 186, 0.9);
+    }
+
+    .btn-icon {
+      font-size: 1rem;
+    }
+
+    .result-box {
+      margin-top: 12px;
+      padding: 12px 16px 16px;
+      border-radius: 24px;
+      background: #ffffff;
+      border: none;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: #4a4560;
+      min-height: 46px;
+      display: flex;
+      align-items: flex-start;
+      position: relative;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      box-shadow: 0 8px 18px rgba(209, 177, 214, 0.5);
+      font-family: 'Poppins', 'Poppins';
+    }
+
+    .result-box::before {
+      content: "♡";
+      color: #f08bb1;
+      margin-right: 8px;
+      font-size: 1.2rem;
+      margin-top: 0;
+      flex-shrink: 0;
+    }
+
+    .section-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      border-radius: 20px;
+      border: 1px solid #f1cce0;
+      padding: 11px 13px;
+      font-size: 0.95rem;
+      resize: vertical;
+      min-height: 94px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: rgba(255, 250, 252, 0.98);
+      font-family: 'Poppins';
+    }
+
+    textarea::placeholder {
+      color: #F6A9C7;
+      opacity: 0.8;
+    }
+
+    textarea:focus {
+      border-color: #f29ec7;
+      box-shadow: 0 0 0 3px rgba(243, 173, 210, 0.35);
+    }
+
+    .dialog-row {
+      margin-top: 12px;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .avatar-dog {
+      width: 36px;
+      height: 32px;
+      background: transparent;
+      box-shadow: none;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+      animation: floatAvatar 2.5s ease-in-out infinite;
+    }
+
+    @keyframes floatAvatar {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    .dog-head-mini {
+      position: relative;
+      width: 30px;
+      height: 26px;
+      box-shadow: 0 4px 10px rgba(180, 180, 190, 0.65);
+      border-radius: 50%;
+      background: #ffffff;
+    }
+
+    .dog-head-mini::before {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 20px;
+      background: #ffffff;
+      border-radius: 50%;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .dog-ear-mini {
+      position: absolute;
+      width: 10px;
+      height: 12px;
+      background: #f7f7ff;
+      border-radius: 50%;
+      top: -4px;
+      box-shadow: 0 0 0 1px rgba(205, 205, 220, 0.7);
+    }
+
+    .dog-ear-mini.left { left: 0px; }
+    .dog-ear-mini.right { right: 0px; }
+
+    .dog-eye-mini {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #333;
+      border-radius: 50%;
+      top: 11px;
+    }
+
+    .dog-eye-mini.left { left: 8px; }
+    .dog-eye-mini.right { right: 8px; }
+
+    .dog-nose-mini {
+      position: absolute;
+      width: 4px;
+      height: 3px;
+      background: #333;
+      border-radius: 50%;
+      left: 50%;
+      top: 15px;
+      transform: translateX(-50%);
+    }
+
+    .bear-bubble {
+      margin-top: 0;
+      flex: 1;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(80, 40, 90, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      padding: 16px;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 960px;
+      max-height: 80vh;
+      background: #fffdf8;
+      border-radius: 20px;
+      box-shadow: 0 14px 40px rgba(98, 76, 120, 0.6);
+      border: 1px solid rgba(246, 220, 198, 0.95);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid #f0e1cf;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #fff6eb, #ffece1);
+    }
+
+    .modal-header-title {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .modal-header-icon {
+      font-size: 1.3rem;
+      margin-top: 1px;
+    }
+
+    .modal-header h3 {
+      font-size: 1.1rem;
+      color: #a06237;
+      font-family: 'Poppins';
+      font-weight: 700;
+    }
+
+    .modal-subtitle {
+      font-size: 0.85rem;
+      color: #b28a65;
+      margin-top: 2px;
+      font-family: 'Poppins';
+    }
+
+    .close-btn {
+      border: none;
+      background: transparent;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: #a06237;
+      padding: 4px;
+      transition: transform 0.1s, color 0.15s;
+    }
+
+    .close-btn:hover {
+      transform: translateY(-1px);
+      color: #7f441c;
+    }
+
+    .modal-body {
+      padding: 10px 16px 14px;
+      overflow-y: auto;
+    }
+
+    .table-wrapper {
+      border-radius: 14px;
+      background-image: linear-gradient(#fdf2da 1px, transparent 1px);
+      background-size: 100% 32px;
+      border: 1px solid #f0d5b6;
+      padding: 10px 10px 12px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .history-card {
+      background: #fffdf9;
+      border-radius: 16px;
+      padding: 12px 14px 14px;
+      box-shadow: 0 6px 16px rgba(210, 176, 142, 0.45);
+      border: 1px solid #f2d2ae;
+    }
+
+    .history-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .history-date {
+      font-size: 0.88rem;
+      color: #a06735;
+      font-weight: 500;
+      font-family: 'Poppins';
+    }
+
+    .history-actions {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .icon-btn-sm {
+      border: none;
+      background: transparent;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 2px;
+      transition: transform 0.1s, color 0.15s;
+    }
+
+    .action-edit {
+      color: #7a4a20;
+    }
+
+    .action-edit:hover {
+      transform: translateY(-1px);
+      color: #5c3414;
+    }
+
+    .action-delete {
+      color: #aa3a3a;
+    }
+
+    .action-delete:hover {
+      transform: translateY(-1px);
+      color: #811f1f;
+    }
+
+    .history-text {
+      font-size: 0.9rem;
+      color: #5a4936;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'Caveat', 'Noto Sans TC';
+    }
+
+    .history-mood {
+      margin-bottom: 6px;
+    }
+
+    .history-divider {
+      height: 1px;
+      margin: 8px 0;
+      background: linear-gradient(to right, transparent, #eac7a2, transparent);
+      opacity: 0.7;
+    }
+
+    .editable-cell {
+      outline: 1px dashed #f0b28c;
+      background: #fff6ea;
+      border-radius: 6px;
+      padding: 2px 3px;
+    }
+
+    .empty-tip {
+      font-size: 0.88rem;
+      color: #b08a64;
+      text-align: center;
+      margin-top: 10px;
+      font-family: 'Caveat', 'Noto Sans TC';
+    }
+
+    @media (min-width: 768px) {
+      header h1 {
+        font-size: 2.8rem;
+      }
+
+      header p {
+        font-size: 1.15rem;
+      }
+
+      .sections {
+        flex-direction: row;
+      }
+
+      .card {
+        padding: 22px 22px 24px;
+      }
+
+      .history-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .sections {
+        gap: 32px;
+      }
+
+      .card {
+        padding: 24px 24px 26px;
+      }
+
+      .result-box {
+        min-height: 56px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 2rem;
+      }
+
+      header p {
+        font-size: 1rem;
+      }
+
+      .card {
+        padding: 16px 14px 18px;
+      }
+
+      .sections {
+        gap: 28px;
+      }
+
+      .section-actions {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      /* 手機版：粉色按鈕全寬，藍色維持小顆 */
+      .btn-pink {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scene" aria-hidden="true">
+    <div class="scene-ground"></div>
+    <div class="scene-bear">
+      <div class="bear-body"></div>
+      <div class="bear-head">
+        <div class="bear-ear left"></div>
+        <div class="bear-ear right"></div>
+        <div class="bear-face-inner"></div>
+        <div class="bear-eye left"></div>
+        <div class="bear-eye right"></div>
+        <div class="bear-nose"></div>
+      </div>
+      <div class="bear-heart"></div>
+    </div>
+    <div class="scene-dog">
+      <div class="dog-body"></div>
+      <div class="dog-head">
+        <div class="dog-ear left"></div>
+        <div class="dog-ear right"></div>
+        <div class="dog-face-inner"></div>
+        <div class="dog-eye left"></div>
+        <div class="dog-eye right"></div>
+        <div class="dog-nose"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrapper">
+    <div class="top-bar">
+      <button class="history-button" id="historyBtn" title="歷史紀錄">
+        📔
+      </button>
+    </div>
+
+    <header>
+      <h1>
+        <span class="icon">♡</span>
+        <span>妳是最棒的！</span>
+      </h1>
+      <p>一切都是最美好的存在，宇宙會與你同在</p>
+    </header>
+
+    <main class="sections">
+      <section class="card-plain" aria-label="快速鼓勵">
+        <div class="section-actions">
+          <button type="button" class="btn-blue" id="randomPhraseBtn">
+            <span class="btn-icon">♡</span>
+            <span>幫你打打氣</span>
+          </button>
+        </div>
+        <div class="dialog-row" id="randomPhraseRow">
+          <div class="avatar-dog">
+            <div class="dog-head-mini">
+              <div class="dog-ear-mini left"></div>
+              <div class="dog-ear-mini right"></div>
+              <div class="dog-eye-mini left"></div>
+              <div class="dog-eye-mini right"></div>
+              <div class="dog-nose-mini"></div>
+            </div>
+          </div>
+          <div class="result-box bear-bubble" id="randomPhrase">
+            今天先願意打開這個頁面，就已經是很勇敢的一件事了。
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-label="心情輸入與建議">
+        <div class="card-header">
+          <h2>跟我說說你的心情</h2>
+        </div>
+        <textarea
+          id="moodInput"
+          placeholder="我來聽聽妳今天的心情或煩惱吧～"
+        ></textarea>
+        <div class="section-actions" style="margin-top: 10px;">
+          <button type="button" class="btn-pink" id="transformBtn">
+            <span class="btn-icon">♡</span>
+            <span>讓我陪著你</span>
+          </button>
+        </div>
+        <div class="result-box" id="suggestionOutput">
+          我會慢慢陪妳，把心裡的重量分一點出來。
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="historyModal" aria-hidden="true" role="dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-header-title">
+          <span class="modal-header-icon">📔</span>
+          <div>
+            <h3>歷史紀錄</h3>
+            <div class="modal-subtitle">每一段曾經的心情，都安穩地躺在這裡</div>
+          </div>
+        </div>
+        <button type="button" class="close-btn" id="closeHistoryBtn" aria-label="關閉歷史紀錄">
+          ×
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="table-wrapper">
+          <div class="history-list" id="historyList"></div>
+        </div>
+        <div class="empty-tip" id="emptyHistoryTip">
+          還沒有任何紀錄，等妳哪天想說說話，我會幫妳好好收藏。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function createPetals() {
+      const petalCount = 18;
+      for (let i = 0; i < petalCount; i++) {
+        const petal = document.createElement("div");
+        petal.className = "petal";
+        const delay = Math.random() * 12;
+        const duration = 10 + Math.random() * 10;
+        const size = 10 + Math.random() * 10;
+        petal.style.left = Math.random() * 100 + "%";
+        petal.style.animationDelay = delay + "s";
+        petal.style.animationDuration = duration + "s";
+        petal.style.width = size + "px";
+        petal.style.height = size + "px";
+        document.body.appendChild(petal);
+      }
+    })();
+
+    const randomPhrases = [
+      "妳不用每一秒都很堅強，有時候只要不放棄呼吸，就已經很勇敢了。",
+      "就算今天狀態不好，也不代表妳整個人都不好。",
+      "妳可以累、可以想哭，但妳依然值得被溫柔對待。",
+      "不一定要什麼都做得好，能好好照顧自己就已經很厲害。",
+      "妳的步調可以慢一點點，世界也可以等妳一下沒關係。",
+      "那些覺得好丟臉的時刻，其實都是妳很用力生活的證明。",
+      "今天能走到現在這一刻，就算是一種小小的勝利。",
+      "妳不是麻煩，妳只是在學習怎麼好好愛自己。",
+      "就算別人看不見，宇宙也知道妳這一路有多努力。",
+      "有時候溫柔地放過自己一下，就是最重要的功課。"
+    ];
+
+    const songSuggestions = [
+      {
+        title: "好不容易",
+        artist: "告五人",
+        note: "適合在覺得自己好像一直不夠好時，提醒自己：已經很不容易了。"
+      },
+      {
+        title: "我還年輕 我還年輕",
+        artist: "好樂團",
+        note: "在對未來迷惘的時候，提醒自己人生還有很多可能。"
+      },
+      {
+        title: "起風了",
+        artist: "買辣椒也用券",
+        note: "適合在低潮裡，慢慢跟自己和解的晚上聽。"
+      },
+      {
+        title: "小手拉大手",
+        artist: "梁靜茹",
+        note: "需要一點被溫柔牽著走的感覺時，很適合放著當背景。"
+      },
+      {
+        title: "陪著你走",
+        artist: "林宥嘉",
+        note: "想要有一種「不是只有我一個人」的感覺時，可以聽聽看。"
+      }
+    ];
+
+    /* 新增：啟發故事資料庫 */
+    const storySuggestions = [
+      {
+        title: "小仙人掌的耐心",
+        text: "有一顆長得不起眼的小仙人掌，被擺在最角落，很久都沒人注意。牠常常覺得自己什麼也做不好，只會站在原地發呆。有一天，店裡突然停電，大家慌亂時，有個小孩摸黑跌到仙人掌旁邊，牠身上的小刺剛好讓小孩抓住，沒有摔倒。那一刻，小仙人掌才發現：原來自己身上那些覺得「很礙事」的地方，也有機會在某個時刻剛好救了誰。妳現在不一定要發光發熱，只要好好站在自己的位置上，就已經很重要了。"
+      },
+      {
+        title: "慢一點的公車",
+        text: "有一班公車，永遠比別的公車慢一點點，司機常被抱怨：「為什麼不開快一點？」直到有一天，下著大雨的路口前方發生事故，平常開很快的那班公車因為煞不住受了傷，而這一班慢吞吞的車，剛好避開了危險。原來「慢一點」不是缺點，而是另一種節奏。妳現在的速度，剛好就是妳的節奏，不需要趕上任何人。"
+      },
+      {
+        title: "總是修不好的鉛筆",
+        text: "有一枝鉛筆，怎麼削筆芯都會斷，主人氣得想把它丟掉。但有一天，主人拿它來畫草稿，發現斷掉的筆芯讓線條變得有點粗、有點暈開，意外地很適合畫陰影。那個作品後來成了他最喜歡的一張圖。那些妳覺得「怎麼老是搞砸」的地方，也許只是還沒找到適合它發揮的舞台而已。"
+      }
+    ];
+
+    const toolBox = {
+      actions: ["一步一步行動", "調整想法", "好好照顧身體", "向外求助"],
+      actionTips: [
+        "把今天最讓妳焦慮的一件事情，拆成可以在 10 分鐘內完成的小步驟，只做第一步就好。",
+        "寫下三件「已經完成的小事」，不一定要偉大，比如有好好吃一頓飯、把房間的垃圾丟掉。",
+        "設定一個 5 分鐘的鬧鐘，只專心做一件很小又具體的事情，結束後就允許自己先休息。"
+      ],
+      mindTips: [
+        "當腦袋出現「我真的好糟」的念頭時，在後面加上一句：『但我正在學習怎麼對自己好一點。』",
+        "試著把今天發生的事，改寫成『如果是我在安慰朋友，我會怎麼說？』然後把那段話送給自己。",
+        "提醒自己：情緒只是天氣，不是身分證上的名字。今天的陰天，不等於妳這個人。"
+      ],
+      bodyTips: [
+        "幫自己倒一杯溫水，慢慢喝完，讓身體知道：妳有在照顧它。",
+        "做三次深呼吸：吸氣數到四、停住數到四、吐氣也數到四，讓心跳跟著慢下來。",
+        "伸懶腰 30 秒，把肩膀抬起、放下，讓卡住的地方鬆一點點。"
+      ],
+      helpTips: [
+        "選一個妳信任的人，只分享一句話就好，比如：『我今天有點難過，可以聽我說一下嗎？』",
+        "如果不知道跟誰說，就先寫在這裡，或者寫在紙上，讓情緒有一個出口。",
+        "記得妳永遠可以再來這個頁面，這裡會一直留一個位置給妳。"
+      ]
+    };
+
+    const randomPhraseRow = document.getElementById("randomPhraseRow");
+    const randomPhraseEl = document.getElementById("randomPhrase");
+    const randomPhraseBtn = document.getElementById("randomPhraseBtn");
+    const moodInput = document.getElementById("moodInput");
+    const transformBtn = document.getElementById("transformBtn");
+    const suggestionOutput = document.getElementById("suggestionOutput");
+
+    const historyBtn = document.getElementById("historyBtn");
+    const historyModal = document.getElementById("historyModal");
+    const closeHistoryBtn = document.getElementById("closeHistoryBtn");
+    const historyList = document.getElementById("historyList");
+    const emptyHistoryTip = document.getElementById("emptyHistoryTip");
+
+    let historyData = [];
+
+    function formatDate(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      const weekdayNames = ["日", "一", "二", "三", "四", "五", "六"];
+      const w = weekdayNames[date.getDay()];
+      return y + "/" + m + "/" + d + " (" + w + ")";
+    }
+
+    function refreshEmptyTip() {
+      emptyHistoryTip.style.display = historyData.length === 0 ? "block" : "none";
+    }
+
+    function saveHistory() {
+      try {
+        localStorage.setItem("moodHelperHistory", JSON.stringify(historyData));
+      } catch (e) {}
+    }
+
+    function rebuildHistory() {
+      historyList.innerHTML = "";
+      historyData.forEach((record, index) => {
+        const card = document.createElement("div");
+        card.className = "history-card";
+
+        const header = document.createElement("div");
+        header.className = "history-card-header";
+
+        const dateSpan = document.createElement("span");
+        dateSpan.className = "history-date";
+        dateSpan.textContent = record.date;
+
+        const actions = document.createElement("div");
+        actions.className = "history-actions";
+
+        const editBtn = document.createElement("button");
+        editBtn.className = "icon-btn-sm action-edit";
+        editBtn.textContent = "✏";
+        editBtn.title = "編輯這一筆";
+        editBtn.addEventListener("click", function () {
+          enterEditMode(card, index);
+        });
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "icon-btn-sm action-delete";
+        deleteBtn.textContent = "🗑";
+        deleteBtn.title = "刪除這一筆";
+        deleteBtn.addEventListener("click", function () {
+          deleteRow(index);
+        });
+
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        header.appendChild(dateSpan);
+        header.appendChild(actions);
+
+        const moodDiv = document.createElement("div");
+        moodDiv.className = "history-text history-mood";
+        moodDiv.textContent = record.mood;
+
+        const divider = document.createElement("div");
+        divider.className = "history-divider";
+
+        const outputDiv = document.createElement("div");
+        outputDiv.className = "history-text history-output";
+        outputDiv.textContent = record.output;
+
+        card.appendChild(header);
+        card.appendChild(moodDiv);
+        card.appendChild(divider);
+        card.appendChild(outputDiv);
+
+        historyList.appendChild(card);
+      });
+
+      refreshEmptyTip();
+    }
+
+    function loadHistory() {
+      try {
+        const saved = localStorage.getItem("moodHelperHistory");
+        if (saved) {
+          historyData = JSON.parse(saved);
+        }
+      } catch (e) {
+        historyData = [];
+      }
+      rebuildHistory();
+    }
+
+    function addRecord(moodText, outputText) {
+      const record = {
+        date: formatDate(new Date()),
+        mood: moodText,
+        output: outputText
+      };
+      historyData.push(record);
+      saveHistory();
+      rebuildHistory();
+    }
+
+    function deleteRow(index) {
+      historyData.splice(index, 1);
+      saveHistory();
+      rebuildHistory();
+    }
+
+    function enterEditMode(cardEl, index) {
+      const moodEl = cardEl.querySelector(".history-mood");
+      const outputEl = cardEl.querySelector(".history-output");
+      const actionsEl = cardEl.querySelector(".history-actions");
+
+      moodEl.contentEditable = "true";
+      outputEl.contentEditable = "true";
+      moodEl.classList.add("editable-cell");
+      outputEl.classList.add("editable-cell");
+
+      actionsEl.innerHTML = "";
+
+      const saveBtn = document.createElement("button");
+      saveBtn.className = "icon-btn-sm action-edit";
+      saveBtn.textContent = "✔";
+      saveBtn.title = "儲存這一筆";
+
+      const cancelBtn = document.createElement("button");
+      cancelBtn.className = "icon-btn-sm action-delete";
+      cancelBtn.textContent = "↩";
+      cancelBtn.title = "取消編輯";
+
+      saveBtn.addEventListener("click", function () {
+        historyData[index].mood = moodEl.textContent.trim();
+        historyData[index].output = outputEl.textContent.trim();
+        saveHistory();
+        rebuildHistory();
+      });
+
+      cancelBtn.addEventListener("click", function () {
+        rebuildHistory();
+      });
+
+      actionsEl.appendChild(saveBtn);
+      actionsEl.appendChild(cancelBtn);
+    }
+
+    function getShortPreview(text, maxLen) {
+      if (!text) return "";
+      const trimmed = text.trim();
+      if (trimmed.length <= maxLen) return trimmed;
+      return trimmed.slice(0, maxLen) + "…";
+    }
+
+    function pickRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    /* 改版：輸出「一個具體建議 + 一個啟發故事或一首歌 + 一句安撫」 */
+    function generateSuggestion(moodText) {
+      const preview = getShortPreview(moodText, 40);
+
+      const category = pickRandom(toolBox.actions);
+      let actionTip;
+      if (category === "一步一步行動") actionTip = pickRandom(toolBox.actionTips);
+      else if (category === "調整想法") actionTip = pickRandom(toolBox.mindTips);
+      else if (category === "好好照顧身體") actionTip = pickRandom(toolBox.bodyTips);
+      else actionTip = pickRandom(toolBox.helpTips);
+
+      const useStory = Math.random() < 0.5;
+      let middlePart = "";
+      if (useStory) {
+        const story = pickRandom(storySuggestions);
+        middlePart =
+          "給妳一個小小的故事：「" +
+          story.title +
+          "」。" +
+          " " +
+          story.text;
+      } else {
+        const song = pickRandom(songSuggestions);
+        middlePart =
+          "也可以讓音樂陪妳一下，試試看「" +
+          song.title +
+          "」— " +
+          song.artist +
+          "，" +
+          song.note;
+      }
+
+      const start =
+        preview
+          ? "妳剛剛說到「" + preview + "」，光是願意把這些打出來，就已經很不容易了。"
+          : "今天的心情也許有點亂沒關係，妳願意留下文字，本身就是一種勇敢。";
+
+      const closing =
+        "不需要一下子把所有問題都解決，只要讓今天的自己比昨天舒服一點點，就已經很值得被擁抱了。";
+
+      return start + " 現在可以試著從「" + category + "」這個方向，先做一件小事情：" +
+             actionTip + " " + middlePart + " " + closing;
+    }
+
+    randomPhraseBtn.addEventListener("click", function () {
+      const base = Math.random() < 0.7;
+      let phrase;
+      if (base) {
+        phrase =
+          randomPhrases[Math.floor(Math.random() * randomPhrases.length)];
+      } else {
+        const song =
+          songSuggestions[Math.floor(Math.random() * songSuggestions.length)];
+        phrase =
+          "想像我們一起坐在草地上聽歌。" +
+          " 可以放一首「" +
+          song.title +
+          "」— " +
+          song.artist +
+          "，" +
+          song.note +
+          " 把今天的煩惱暫時交給音樂幫妳抱一下。";
+      }
+      randomPhraseEl.textContent = phrase;
+      randomPhraseRow.style.display = "flex";
+    });
+
+    transformBtn.addEventListener("click", function () {
+      const moodText = moodInput.value.trim();
+      if (!moodText) {
+        suggestionOutput.textContent =
+          "先不用急著打很多字，等妳想說的時候，我都在。";
+        return;
+      }
+      const suggestion = generateSuggestion(moodText);
+      suggestionOutput.textContent = suggestion;
+      addRecord(moodText, suggestion);
+      moodInput.value = "";
+    });
+
+    historyBtn.addEventListener("click", function () {
+      historyModal.classList.add("open");
+      historyModal.setAttribute("aria-hidden", "false");
+    });
+
+    closeHistoryBtn.addEventListener("click", function () {
+      historyModal.classList.remove("open");
+      historyModal.setAttribute("aria-hidden", "true");
+    });
+
+    historyModal.addEventListener("click", function (e) {
+      if (e.target === historyModal) {
+        historyModal.classList.remove("open");
+        historyModal.setAttribute("aria-hidden", "true");
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && historyModal.classList.contains("open")) {
+        historyModal.classList.remove("open");
+        historyModal.setAttribute("aria-hidden", "true");
+      }
+    });
+
+    loadHistory();
+  </script>
+</body>
+</html>
